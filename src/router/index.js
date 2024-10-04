@@ -1,27 +1,41 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHashHistory } from 'vue-router';
+import WikiPrincipal from '../views/WikiPrincipal.vue';
+import WikiPersonajes from '../views/WikiPersonajes.vue';
+import WikiFunciones from '../views/WikiFunciones.vue';
+import MenuJuego from '../components/MenuJuego.vue';
+import PartidaJuego from '../components/PartidaJuego.vue';
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: WikiPrincipal
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: function () {
-      return import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-    }
+    path: '/personajes',
+    name: 'personajes',
+    component: WikiPersonajes
+  },
+  {
+    path: '/funciones',
+    name: 'funciones',
+    component: WikiFunciones
+  },
+  {
+    path: '/menu',
+    name: 'menu',
+    component: MenuJuego
+  },
+  {
+    path: '/partida',
+    name: 'partida',
+    component: PartidaJuego
   }
-]
+];
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
-})
+});
 
-export default router
+export default router;
