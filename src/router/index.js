@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import WikiPrincipal from '../views/WikiPrincipal.vue';
+import IniciarSesion from '@/views/IniciarSesion.vue';
 import WikiPersonajes from '../views/WikiPersonajes.vue';
 import WikiFunciones from '../views/WikiFunciones.vue';
 import MenuJuego from '../components/MenuJuego.vue';
@@ -9,7 +9,17 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: WikiPrincipal
+    component: IniciarSesion
+  },
+  {
+    path: '/crear-cuenta',
+    name: 'crear-cuenta',
+    component: () => import('../views/RegistrarUsuario.vue')
+  },
+  {
+    path: '/inicio',
+    name: 'wiki',
+    component: () => import('../views/WikiPrincipal.vue')
   },
   {
     path: '/personajes',

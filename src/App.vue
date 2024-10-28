@@ -1,11 +1,4 @@
 <template>
-  <nav>
-    <div class="links-header">
-      <router-link to="/">Pagina Principal</router-link> |
-      <router-link to="/personajes">Wiki Personajes</router-link> |
-      <router-link to="/funciones">Wiki Funciones</router-link>
-    </div>
-  </nav>
   <router-view />
 </template>
 
