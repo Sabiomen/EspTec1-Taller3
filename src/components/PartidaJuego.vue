@@ -2,10 +2,10 @@ funciona mas o menos, arreglar mas tarde
 
 <template>
     <div id="arena">
-      <div id="player1" class="player" :style="{ backgroundImage: `url('resources/${jugador1Imagen}.png')`, left: player1X + 'px' }">
+      <div id="player1" class="player" :style="{ backgroundImage: `url(${require(`@/assets/${jugador1Imagen}.png`)})`, left: player1X + 'px' }">
         {{ jugador1Nombre }} {{ player1Health }}
       </div>
-      <div id="player2" class="player" :style="{ backgroundImage: `url('resources/${jugador2Imagen}.png')`, left: player2X + 'px' }">
+      <div id="player2" class="player" :style="{ backgroundImage: `url(${require(`@/assets/${jugador2Imagen}.png`)})`, left: player2X + 'px' }">
         {{ jugador2Nombre }} {{ player2Health }}
       </div>
       <div id="powerup-attack" class="powerup attack" v-if="powerupAttackVisible" :style="{ left: powerupAttackX + 'px', top: '60px' }"></div>
@@ -18,10 +18,10 @@ funciona mas o menos, arreglar mas tarde
     name: 'PartidaJuego',
     data() {
       return {
-        jugador1Nombre: localStorage.getItem("jugador1") || 'Jugador 1',
-        jugador2Nombre: localStorage.getItem("jugador2") || 'Jugador 2',
-        jugador1Imagen: localStorage.getItem("jugador1") || '',
-        jugador2Imagen: localStorage.getItem("jugador2") || '',
+        jugador1Nombre: localStorage.getItem("jugador1"),
+        jugador2Nombre: localStorage.getItem("jugador2"),
+        jugador1Imagen: localStorage.getItem("jugador1"),
+        jugador2Imagen: localStorage.getItem("jugador2"),
         player1Health: 100,
         player2Health: 100,
         player1X: 0,
@@ -44,6 +44,9 @@ funciona mas o menos, arreglar mas tarde
     },
     methods: {
       initializeGame() {
+        console.log(this.jugador1Nombre);
+        console.log(this.jugador2Nombre);
+       
         this.player1X = (this.$el.clientWidth / 2) - 85; // Ajustar posición inicial
         this.player2X = (this.$el.clientWidth / 2) - 85;
   
@@ -149,6 +152,15 @@ funciona mas o menos, arreglar mas tarde
     width: 171px;
     height: 171px;
     background-size: cover;
+  }
+  #player1 {
+    bottom: 0;
+    left: 50%;
+
+  }
+  #player2 {
+    top: 0;
+    left: 50%;
   }
   .laser {
     position: absolute;
