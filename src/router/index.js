@@ -12,12 +12,12 @@ const routes = [
     component: IniciarSesion
   },
   {
-    path: '/crear-cuenta',
+    path: '/register',
     name: 'crear-cuenta',
     component: () => import('../views/RegistrarUsuario.vue')
   },
   {
-    path: '/inicio',
+    path: '/home',
     name: 'wiki',
     component: () => import('../views/WikiPrincipal.vue')
   },

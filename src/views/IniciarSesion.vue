@@ -18,7 +18,7 @@
                 </div>
                 <button type="submit">Iniciar sesión</button>
             </form>
-            <p>No tienes cuenta? <router-link to="/crear-cuenta">Crear Cuenta</router-link></p>
+            <p>No tienes cuenta? <router-link to="/register">Crear Cuenta</router-link></p>
         </div>
     </div>
 </template>
