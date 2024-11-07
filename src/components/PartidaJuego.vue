@@ -1,7 +1,6 @@
-funciona mas o menos, arreglar mas tarde
-
 <template>
   <div id="arena">
+    <!-- Jugadores -->
     <div id="player1" ref="player1" class="player"
       :style="{ backgroundImage: `url(${require(`@/assets/${jugador1Imagen}.png`)})`, left: player1X + 'px' }">
       {{ jugador1Nombre }} {{ player1Health }}
@@ -10,10 +9,17 @@ funciona mas o menos, arreglar mas tarde
       :style="{ backgroundImage: `url(${require(`@/assets/${jugador2Imagen}.png`)})`, left: player2X + 'px' }">
       {{ jugador2Nombre }} {{ player2Health }}
     </div>
+
+    <!-- Powerups -->
     <div id="powerup-attack" class="powerup attack" v-if="powerupAttackVisible"
       :style="{ left: powerupAttackX + 'px', top: '60px' }"></div>
     <div id="powerup-health" class="powerup health" v-if="powerupHealthVisible"
       :style="{ left: powerupHealthX + 'px', top: '60px' }"></div>
+
+    <!-- Láseres -->
+    <div v-for="(laser, index) in lasers" :key="index" class="laser"
+      :style="{ left: laser.x + 'px', top: laser.y + 'px' }">
+    </div>
   </div>
 </template>
 
@@ -22,8 +28,8 @@ export default {
   name: 'PartidaJuego',
   data() {
     return {
-      jugador1Nombre: document.getElementById("jugador1"),
-      jugador2Nombre: document.getElementById("jugador2"),
+      jugador1Nombre: "Jugador 1",
+      jugador2Nombre: "Jugador 2",
       jugador1Imagen: localStorage.getItem("jugador1"),
       jugador2Imagen: localStorage.getItem("jugador2"),
       player1Health: 100,
@@ -32,7 +38,7 @@ export default {
       player2X: 0,
       playerSpeed: 5,
       laserSpeed: 5,
-      lasers: [],
+      lasers: [], // Láseres como objetos {x, y, direction, player}
       keys: {},
       powerupAttackX: 0,
       powerupHealthX: 0,
@@ -49,7 +55,8 @@ export default {
   methods: {
 
     initializeGame() {
-      this.player1X = (this.$el.clientWidth / 2) - 85; // Ajustar posición inicial
+      // Inicializar posición de jugadores y eventos
+      this.player1X = (this.$el.clientWidth / 2) - 85; 
       this.player2X = (this.$el.clientWidth / 2) - 85;
 
       document.addEventListener('keydown', this.handleKeyDown);
@@ -57,25 +64,28 @@ export default {
       this.spawnPowerup();
       this.gameLoop();
     },
+
     handleKeyDown(e) {
       this.keys[e.key] = true;
 
+      // Disparar láser
       if (e.key === 'w' && !this.keys['shootingPlayer1']) {
-        this.shootLaser(this.player1X, 'up');
+        this.shootLaser(this.player1X, 'up', 1);
         this.keys['shootingPlayer1'] = true;
       } else if (e.key === 'ArrowUp' && !this.keys['shootingPlayer2']) {
-        this.shootLaser(this.player2X, 'down');
+        this.shootLaser(this.player2X, 'down', 2);
         this.keys['shootingPlayer2'] = true;
       }
     },
+
     handleKeyUp(e) {
       this.keys[e.key] = false;
-
       if (e.key === 'w') this.keys['shootingPlayer1'] = false;
       if (e.key === 'ArrowUp') this.keys['shootingPlayer2'] = false;
     },
+
     gameLoop() {
-      // Movimiento y lógica de juego aquí...
+      // Movimiento de jugadores y lógica del juego
       if (this.keys['a'] && this.player1X > 0) {
         this.player1X -= this.playerSpeed;
       } else if (this.keys['d'] && this.player1X < this.$el.clientWidth - 171) {
@@ -88,73 +98,44 @@ export default {
         this.player2X += this.playerSpeed;
       }
 
-
-      // Lógica de colisión y ataque
       this.moveLasers();
+      this.checkPowerupCollision();
       requestAnimationFrame(this.gameLoop);
     },
-    shootLaser(xPosition, direction) {
-      const laser = document.createElement('div');
-      laser.classList.add('laser');
-      laser.style.left = `${xPosition + 75}px`;
-      laser.direction = direction;
 
-      if (direction === 'up') {
-        laser.style.bottom = '60px';
-      } else {
-        laser.style.top = '60px';
-      }
-
-      this.$el.appendChild(laser);
+    shootLaser(xPosition, direction, player) {
+      const laser = {
+        x: xPosition + 75, // Centrado relativo al jugador
+        y: direction === 'up' ? this.$refs.player1.offsetTop : this.$refs.player2.offsetTop + this.$refs.player2.offsetHeight,
+        direction: direction,
+        player: player
+      };
       this.lasers.push(laser);
     },
 
-
-
     moveLasers() {
-      // Mover láseres y comprobar colisiones aquí...
-      this.lasers.forEach((laser, index) => {
+      this.lasers = this.lasers.filter((laser, index) => {
         if (laser.direction === 'up') {
-          const currentBottom = parseInt(laser.style.bottom);
-          if (currentBottom >= arena.offsetHeight) {
-            laser.remove();
-            this.lasers.splice(index, 1);
-          } else {
-            laser.style.bottom = `${currentBottom + this.laserSpeed}px`;
+          laser.y -= this.laserSpeed; // Mueve hacia arriba
 
-            if (this.checkCollision(laser, this.$refs.player2)) {
-              laser.remove();
-              this.lasers.splice(index, 1);
-              this.player2Health -= this.player1AttackDamage;
-              this.jugador2Nombre.innerText = "Jugador 2 " + this.player2Health;
-              if (this.player2Health <= 0) {
-                alert('Gana el Jugador 1!');
-                resetGame();
-              }
-            }
+          if (laser.y <= 0) return false; // Elimina el láser si sale del área de juego
+          if (this.checkCollision(laser, this.$refs.player2)) {
+            this.player2Health -= this.player1AttackDamage;
+            if (this.player2Health <= 0) this.endGame(1);
+            return false;
           }
         } else {
-          const currentTop = parseInt(laser.style.top);
-          if (currentTop >= arena.offsetHeight) {
-            laser.remove();
-            this.lasers.splice(index, 1);
-          } else {
-            laser.style.top = `${currentTop + this.laserSpeed}px`;
+          laser.y += this.laserSpeed; // Mueve hacia abajo
 
-            if (this.checkCollision(laser, this.$refs.player1)) {
-              laser.remove();
-              this.lasers.splice(index, 1);
-              this.player1Health -= this.player2AttackDamage;
-              this.jugador1Nombre.innerText = "Jugador 1 " + this.player1Health;
-              if (this.player1Health <= 0) {
-                alert('Gana el Jugador 2!');
-                resetGame();
-              }
-            }
+          if (laser.y >= this.$el.clientHeight) return false; // Elimina el láser si sale del área de juego
+          if (this.checkCollision(laser, this.$refs.player1)) {
+            this.player1Health -= this.player2AttackDamage;
+            if (this.player1Health <= 0) this.endGame(2);
+            return false;
           }
         }
+        return true;
       });
-
     },
     spawnPowerup() {
       const powerupType = Math.random() < 0.5 ? 'attack' : 'health';
@@ -168,21 +149,72 @@ export default {
 
       setTimeout(this.spawnPowerup, this.powerupInterval);
     },
-    // ... Agregar otras funciones aquí
+    checkPowerupCollision() {
+      if (this.powerupAttackVisible && this.checkPlayerCollision(this.$refs.player1, this.powerupAttackX)) {
+        this.applyAttackPowerup(1);
+        this.powerupAttackVisible = false;
+      } else if (this.powerupAttackVisible && this.checkPlayerCollision(this.$refs.player2, this.powerupAttackX)) {
+        this.applyAttackPowerup(2);
+        this.powerupAttackVisible = false;
+      }
 
-    checkCollision(laser, player) {
-      const laserRect = laser.getBoundingClientRect();
+      if (this.powerupHealthVisible && this.checkPlayerCollision(this.$refs.player1, this.powerupHealthX)) {
+        this.applyHealthPowerup(1);
+        this.powerupHealthVisible = false;
+      } else if (this.powerupHealthVisible && this.checkPlayerCollision(this.$refs.player2, this.powerupHealthX)) {
+        this.applyHealthPowerup(2);
+        this.powerupHealthVisible = false;
+      }
+    },
+
+    applyAttackPowerup(player) {
+      if (player === 1) {
+      this.player1AttackDamage = 15;  
+      setTimeout(() => {
+        this.player1AttackDamage = 10;  
+      }, 5000);
+    } else if (player === 2) {
+      this.player2AttackDamage = 15;
+      setTimeout(() => {
+        this.player2AttackDamage = 10; 
+      }, 5000);
+    }
+},
+
+    applyHealthPowerup(player) {
+      if (player === 1) {
+        this.player1Health = Math.min(this.player1Health + 20, 100);
+      } else {
+        this.player2Health = Math.min(this.player2Health + 20, 100);
+      }
+    },
+    checkPlayerCollision(player, powerupX) {
       const playerRect = player.getBoundingClientRect();
-
+      return powerupX >= playerRect.left && powerupX <= playerRect.right;
+    },
+    checkCollision(laser, player) {
+      const laserRect = { left: laser.x, top: laser.y, right: laser.x + 5, bottom: laser.y + 20 };
+      const playerRect = player.getBoundingClientRect();
       return !(laserRect.right < playerRect.left ||
         laserRect.left > playerRect.right ||
         laserRect.bottom < playerRect.top ||
         laserRect.top > playerRect.bottom);
     },
 
+    endGame(winningPlayer) {
+      alert(`Gana el Jugador ${winningPlayer}!`);
+      this.resetGame();
+    },
 
-
-
+    resetGame() {
+      this.player1Health = 100;
+      this.player2Health = 100;
+      this.player1AttackDamage= 10;
+      this.player2AttackDamage= 10;
+      this.player1X = (this.$el.clientWidth / 2) - 85;
+      this.player2X = (this.$el.clientWidth / 2) - 85;
+      this.lasers = [];
+    }
   }
 };
 </script>
@@ -203,8 +235,8 @@ body {
 
 #arena {
   position: relative;
-  width: 1200px;
-  height: 600px;
+  width: auto;
+  height: 728px;
   margin: 0 auto;
   background-color: #333;
   border: 2px solid #555;

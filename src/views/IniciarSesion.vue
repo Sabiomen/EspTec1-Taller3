@@ -63,7 +63,7 @@ export default {
 
             if (!this.errors.username && !this.errors.password) {
                 alert('Inicio de sesión exitoso', { username: this.username, password: this.password })
-                this.$router.push('/inicio');
+                this.$router.push('/home');
             }
             
         }

@@ -2,7 +2,6 @@
     <div class="container">
       <h1>Selecciona tu Personaje</h1>
   
-      <!-- Jugador 1 -->
       <div class="jugador" id="player1">
         <h2>Jugador 1</h2>
         <div class="personajes">
@@ -13,7 +12,6 @@
         </div>
       </div>
   
-      <!-- Jugador 2 -->
       <div class="jugador" id="player2">
         <h2>Jugador 2</h2>
         <div class="personajes">
@@ -23,8 +21,7 @@
           </div>
         </div>
       </div>
-  
-      <!-- Iniciar Partida -->
+
       <button @click="iniciarPartida">Iniciar Partida</button>
     </div>
   </template>
