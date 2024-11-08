@@ -62,7 +62,8 @@ export default {
             }
 
             if (!this.errors.username && !this.errors.password) {
-                alert('Inicio de sesión exitoso', { username: this.username, password: this.password })
+                localStorage.setItem('username', this.username); // Guardar nombre de usuario en localStorage
+                alert('Inicio de sesión exitoso', { username: this.username, password: this.password });
                 this.$router.push('/home');
             }
             

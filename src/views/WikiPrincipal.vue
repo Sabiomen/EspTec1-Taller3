@@ -3,7 +3,7 @@
     <h1>Bienvenido al Juego de Disparos</h1>
     <nav class="nav-interior">
       <router-link to="/personajes">Wiki Personajes</router-link> |
-      <router-link to="/funciones">Wiki Funciones</router-link> |
+      <router-link to="/scoreboard">Scoreboard</router-link> |
       <router-link to="/menu">Empezar el juego</router-link>
     </nav>
   </div>

@@ -10,11 +10,10 @@
       {{ jugador2Nombre }} {{ player2Health }}
     </div>
 
-    <!-- Powerups -->
     <div id="powerup-attack" class="powerup attack" v-if="powerupAttackVisible"
-      :style="{ left: powerupAttackX + 'px', top: '60px' }"></div>
-    <div id="powerup-health" class="powerup health" v-if="powerupHealthVisible"
-      :style="{ left: powerupHealthX + 'px', top: '60px' }"></div>
+     :style="{ left: powerupAttackX + 'px', top: powerupAttackY + 'px' }"></div>
+<div id="powerup-health" class="powerup health" v-if="powerupHealthVisible"
+     :style="{ left: powerupHealthX + 'px', top: powerupHealthY + 'px' }"></div>
 
     <!-- Láseres -->
     <div v-for="(laser, index) in lasers" :key="index" class="laser"
@@ -28,7 +27,7 @@ export default {
   name: 'PartidaJuego',
   data() {
     return {
-      jugador1Nombre: "Jugador 1",
+      jugador1Nombre: localStorage.getItem('jugador1Nombre') || 'Jugador 1',  
       jugador2Nombre: "Jugador 2",
       jugador1Imagen: localStorage.getItem("jugador1"),
       jugador2Imagen: localStorage.getItem("jugador2"),
@@ -46,7 +45,8 @@ export default {
       powerupHealthVisible: false,
       powerupInterval: 5000,
       player1AttackDamage: 10,
-      player2AttackDamage: 10
+      player2AttackDamage: 10,
+      player1Wins: parseInt(localStorage.getItem('player1Wins')) || 0,
     };
   },
   mounted() {
@@ -138,34 +138,47 @@ export default {
       });
     },
     spawnPowerup() {
-      const powerupType = Math.random() < 0.5 ? 'attack' : 'health';
-      if (powerupType === 'attack') {
-        this.powerupAttackX = Math.floor(Math.random() * (this.$el.clientWidth - 40));
-        this.powerupAttackVisible = true;
-      } else {
-        this.powerupHealthX = Math.floor(Math.random() * (this.$el.clientWidth - 40));
-        this.powerupHealthVisible = true;
-      }
+  const powerupType = Math.random() < 0.5 ? 'attack' : 'health';
+  const targetPlayer = Math.random() < 0.5 ? 'player1' : 'player2';
+  const playerTopPosition = targetPlayer === 'player1' ? this.$refs.player1.offsetTop : this.$refs.player2.offsetTop;
 
-      setTimeout(this.spawnPowerup, this.powerupInterval);
-    },
-    checkPowerupCollision() {
-      if (this.powerupAttackVisible && this.checkPlayerCollision(this.$refs.player1, this.powerupAttackX)) {
-        this.applyAttackPowerup(1);
-        this.powerupAttackVisible = false;
-      } else if (this.powerupAttackVisible && this.checkPlayerCollision(this.$refs.player2, this.powerupAttackX)) {
-        this.applyAttackPowerup(2);
-        this.powerupAttackVisible = false;
-      }
+  if (powerupType === 'attack') {
+    this.powerupAttackX = Math.floor(Math.random() * (this.$el.clientWidth - 40));
+    this.powerupAttackY = playerTopPosition;
+    this.powerupAttackVisible = true;
+    this.powerupAttackOwner = targetPlayer; // Indica a qué jugador pertenece
+  } else {
+    this.powerupHealthX = Math.floor(Math.random() * (this.$el.clientWidth - 40));
+    this.powerupHealthY = playerTopPosition;
+    this.powerupHealthVisible = true;
+    this.powerupHealthOwner = targetPlayer; // Indica a qué jugador pertenece
+  }
 
-      if (this.powerupHealthVisible && this.checkPlayerCollision(this.$refs.player1, this.powerupHealthX)) {
-        this.applyHealthPowerup(1);
-        this.powerupHealthVisible = false;
-      } else if (this.powerupHealthVisible && this.checkPlayerCollision(this.$refs.player2, this.powerupHealthX)) {
-        this.applyHealthPowerup(2);
-        this.powerupHealthVisible = false;
-      }
-    },
+  setTimeout(this.spawnPowerup, this.powerupInterval);
+},
+checkPowerupCollision() {
+  // Verifica colisiones para el powerup de ataque
+  if (this.powerupAttackVisible) {
+    if (this.powerupAttackOwner === 'player1' && this.checkPlayerCollision(this.$refs.player1, this.powerupAttackX)) {
+      this.applyAttackPowerup(1);
+      this.powerupAttackVisible = false;
+    } else if (this.powerupAttackOwner === 'player2' && this.checkPlayerCollision(this.$refs.player2, this.powerupAttackX)) {
+      this.applyAttackPowerup(2);
+      this.powerupAttackVisible = false;
+    }
+  }
+
+  // Verifica colisiones para el powerup de salud
+  if (this.powerupHealthVisible) {
+    if (this.powerupHealthOwner === 'player1' && this.checkPlayerCollision(this.$refs.player1, this.powerupHealthX)) {
+      this.applyHealthPowerup(1);
+      this.powerupHealthVisible = false;
+    } else if (this.powerupHealthOwner === 'player2' && this.checkPlayerCollision(this.$refs.player2, this.powerupHealthX)) {
+      this.applyHealthPowerup(2);
+      this.powerupHealthVisible = false;
+    }
+  }
+},
 
     applyAttackPowerup(player) {
       if (player === 1) {
@@ -202,18 +215,29 @@ export default {
     },
 
     endGame(winningPlayer) {
-      alert(`Gana el Jugador ${winningPlayer}!`);
-      this.resetGame();
-    },
+    const userChoice = confirm(`¡Gana el Jugador ${winningPlayer}!\n¿Quieres regresar al menú? Presiona "Aceptar" para regresar o "Cancelar" para jugar otra partida.`);
 
-    resetGame() {
-      this.player1Health = 100;
-      this.player2Health = 100;
-      this.player1AttackDamage= 10;
-      this.player2AttackDamage= 10;
-      this.player1X = (this.$el.clientWidth / 2) - 85;
-      this.player2X = (this.$el.clientWidth / 2) - 85;
-      this.lasers = [];
+    if (userChoice) {
+      this.$router.push('/menu'); // Regresa al menú
+    } else {
+      this.resetGame(); // Reinicia la partida
+    }
+  },
+  resetGame() {
+    this.player1Health = 100;
+    this.player2Health = 100;
+    this.player1AttackDamage = 10;
+    this.player2AttackDamage = 10;
+    this.player1X = (this.$el.clientWidth / 2) - 85;
+    this.player2X = (this.$el.clientWidth / 2) - 85;
+    this.lasers = [];
+    for (let key in this.keys) {
+      this.keys[key] = false;
+    }
+  },
+  incrementarGanadas() {
+      this.player1Wins += 1;
+      localStorage.setItem('player1Wins', this.player1Wins); // Guardar en localStorage
     }
   }
 };

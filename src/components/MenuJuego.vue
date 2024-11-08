@@ -3,7 +3,7 @@
       <h1>Selecciona tu Personaje</h1>
   
       <div class="jugador" id="player1">
-        <h2>Jugador 1</h2>
+        <h2>{{ username || 'Jugador 1' }}</h2>
         <div class="personajes">
           <div class="contenedor" v-for="personaje in personajes" :key="personaje.id">
             <img :src="personaje.img" :alt="personaje.nombre" />
@@ -23,6 +23,7 @@
       </div>
 
       <button @click="iniciarPartida">Iniciar Partida</button>
+      <button @click="regresarInicio">Regresar al Inicio</button>
     </div>
   </template>
   
@@ -30,28 +31,29 @@
   export default {
     name: 'MenuJuego',
     data() {
-      return {
+    return {
         personajes: [
-          {
-            id: 'personaje1',
-            nombre: 'Zaku II Char Aznable',
-            img: require('../assets/Zakuiiselectscreen.png'),
-          },
-          {
-            id: 'personaje2',
-            nombre: 'El MegaHombre',
-            img: require('../assets/megadoodselect.png'),
-          },
-          {
-            id: 'personaje3',
-            nombre: 'Sus',
-            img: require('../assets/personaje3.png'),
-          },
+            {
+                id: 'personaje1',
+                nombre: 'Zaku II Char Aznable',
+                img: require('../assets/Zakuiiselectscreen.png'),
+            },
+            {
+                id: 'personaje2',
+                nombre: 'El MegaHombre',
+                img: require('../assets/megadoodselect.png'),
+            },
+            {
+                id: 'personaje3',
+                nombre: 'Sus',
+                img: require('../assets/personaje3.png'),
+            },
         ],
         seleccionJugador1: null,
         seleccionJugador2: null,
-      };
-    },
+        username: localStorage.getItem('username') // Obtener nombre de usuario
+    };
+},
     methods: {
       seleccionarPersonaje(personaje, jugador) {
         if (jugador === 1) {
@@ -79,21 +81,17 @@
         }
       },
       iniciarPartida() {
-        if (!this.seleccionJugador1 || !this.seleccionJugador2) {
-          alert('Ambos jugadores deben seleccionar un personaje.');
-          return;
-        }
+      if (!this.seleccionJugador1 || !this.seleccionJugador2) {
+        alert('Ambos jugadores deben seleccionar un personaje.');
+        return;
+      }
         localStorage.setItem('jugador1', this.seleccionJugador1);
         localStorage.setItem('jugador2', this.seleccionJugador2);
-        alert(
-          'La partida ha iniciado. Jugador 1: ' +
-            this.seleccionJugador1 +
-            '. Jugador 2: ' +
-            this.seleccionJugador2 +
-            '.'
-        );
-        
-        this.$router.push('/partida'); 
+        localStorage.setItem('jugador1Nombre', this.username); // Guardar el nombre del Jugador 1
+        this.$router.push('/partida');
+      },
+      regresarInicio() {
+        this.$router.push('/home');
       },
     },
   };

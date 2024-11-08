@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import IniciarSesion from '@/views/IniciarSesion.vue';
 import WikiPersonajes from '../views/WikiPersonajes.vue';
-import WikiFunciones from '../views/WikiFunciones.vue';
+import Scoreboard from '../views/Scoreboard.vue';
 import MenuJuego from '../components/MenuJuego.vue';
 import PartidaJuego from '../components/PartidaJuego.vue';
 
@@ -27,9 +27,9 @@ const routes = [
     component: WikiPersonajes
   },
   {
-    path: '/funciones',
-    name: 'funciones',
-    component: WikiFunciones
+    path: '/scoreboard',
+    name: 'scoreboard',
+    component: Scoreboard
   },
   {
     path: '/menu',
