@@ -58,6 +58,15 @@ export default {
       this.validateConfirmPassword()
 
       if (!Object.values(this.errors).some(error => error)) {
+        const newUser = {
+          username: this.username,
+          email: this.email,
+          password: this.password
+        };
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+
         alert('Cuenta creada exitosamente')
         this.$router.push('/')
       }

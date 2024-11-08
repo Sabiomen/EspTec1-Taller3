@@ -33,6 +33,7 @@ export default {
                 username: '',
                 password: ''
             }
+            
         }
     },
     methods: {
@@ -60,11 +61,19 @@ export default {
             } else if (!hasSpecialChar) {
                 this.errors.password = 'La contraseña debe tener al menos un carácter especial';
             }
+            
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(user => user.username === this.username && user.password === this.password);
 
             if (!this.errors.username && !this.errors.password) {
-                localStorage.setItem('username', this.username); // Guardar nombre de usuario en localStorage
-                alert('Inicio de sesión exitoso', { username: this.username, password: this.password });
-                this.$router.push('/home');
+                if(user){
+                    localStorage.setItem('username', this.username); // Guardar nombre de usuario en localStorage
+                    alert('Inicio de sesión exitoso', { username: this.username, password: this.password });
+                    this.$router.push('/home');
+                }else{
+                    alert('Nombre de usuario o contraseña incorrectos');
+                }
+                
             }
             
         }
