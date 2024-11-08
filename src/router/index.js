@@ -7,7 +7,7 @@ import PartidaJuego from '../components/PartidaJuego.vue';
 
 const routes = [
   {
-    path: '/wiki-juego-disparos/',
+    path: '/',
     name: 'home',
     component: IniciarSesion
   },

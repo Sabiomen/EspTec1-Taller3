@@ -18,7 +18,7 @@ export default {
   name: 'WikiPrincipal',
   methods: {
     cerrarSesion() {
-      this.$router.push('/wiki-juego-disparos/');
+      this.$router.push('/');
     }
   }
 }

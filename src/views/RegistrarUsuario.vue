@@ -68,7 +68,7 @@ export default {
         localStorage.setItem('users', JSON.stringify(users));
 
         alert('Cuenta creada exitosamente')
-        this.$router.push('/wiki-juego-disparos/')
+        this.$router.push('/')
       }
     },
     clearErrors() {
