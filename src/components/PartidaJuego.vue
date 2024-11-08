@@ -1,6 +1,5 @@
 <template>
   <div id="arena">
-    <!-- Jugadores -->
     <div id="player1" ref="player1" class="player"
       :style="{ backgroundImage: `url(${require(`@/assets/${jugador1Imagen}.png`)})`, left: player1X + 'px' }">
       {{ jugador1Nombre }} {{ player1Health }}
@@ -15,7 +14,6 @@
 <div id="powerup-health" class="powerup health" v-if="powerupHealthVisible"
      :style="{ left: powerupHealthX + 'px', top: powerupHealthY + 'px' }"></div>
 
-    <!-- Láseres -->
     <div v-for="(laser, index) in lasers" :key="index" class="laser"
       :style="{ left: laser.x + 'px', top: laser.y + 'px' }">
     </div>
@@ -40,7 +38,7 @@ export default {
       player2X: 0,
       playerSpeed: 5,
       laserSpeed: 5,
-      lasers: [], // Láseres como objetos {x, y, direction, player}
+      lasers: [], 
       keys: {},
       powerupAttackX: 0,
       powerupHealthX: 0,
@@ -77,13 +75,12 @@ export default {
   },
   incrementarGanadas() {
   this.player1Wins += 1;
-  localStorage.setItem('player1Wins', this.player1Wins.toString()); // Convertir a string
+  localStorage.setItem('player1Wins', this.player1Wins.toString());
 },
     handleKeyDown(e) {
       if (!this.$refs.player1 || !this.$refs.player2) return;
       this.keys[e.key] = true;
 
-      // Disparar láser
       if (e.key === 'w' || e.key === 'W' && !this.keys['shootingPlayer1']) {
         this.shootLaser(this.player1X, 'up', 1);
         this.keys['shootingPlayer1'] = true;
@@ -101,7 +98,6 @@ export default {
     },
     gameLoop() {
       if (!this.$refs.player1 || !this.$refs.player2) return;
-      // Movimiento de jugadores y lógica del juego
       if (this.keys['a'] || this.keys['A'] && this.player1X > 0) {
         this.player1X -= this.playerSpeed;
       } else if (this.keys['d'] || this.keys['D'] && this.player1X < this.$el.clientWidth - 171) {
@@ -123,7 +119,7 @@ export default {
       const shootingSoundClone = this.beamEffect.cloneNode();
       shootingSoundClone.play();
       const laser = {
-        x: xPosition + 75, // Centrado relativo al jugador
+        x: xPosition + 75, 
         y: direction === 'up' ? this.$refs.player1.offsetTop : this.$refs.player2.offsetTop + this.$refs.player2.offsetHeight,
         direction: direction,
         player: player
@@ -134,18 +130,18 @@ export default {
     moveLasers() {
       this.lasers = this.lasers.filter((laser, index) => {
         if (laser.direction === 'up') {
-          laser.y -= this.laserSpeed; // Mueve hacia arriba
+          laser.y -= this.laserSpeed;
 
-          if (laser.y <= 0) return false; // Elimina el láser si sale del área de juego
+          if (laser.y <= 0) return false; 
           if (this.checkCollision(laser, this.$refs.player2)) {
             this.player2Health -= this.player1AttackDamage;
             if (this.player2Health <= 0) this.endGame(1);
             return false;
           }
         } else {
-          laser.y += this.laserSpeed; // Mueve hacia abajo
+          laser.y += this.laserSpeed; 
 
-          if (laser.y >= this.$el.clientHeight) return false; // Elimina el láser si sale del área de juego
+          if (laser.y >= this.$el.clientHeight) return false; 
           if (this.checkCollision(laser, this.$refs.player1)) {
             this.player1Health -= this.player2AttackDamage;
             if (this.player1Health <= 0) this.endGame(2);
@@ -166,18 +162,17 @@ export default {
     this.powerupAttackX = Math.floor(Math.random() * (this.$el.clientWidth - 40));
     this.powerupAttackY = playerTopPosition;
     this.powerupAttackVisible = true;
-    this.powerupAttackOwner = targetPlayer; // Indica a qué jugador pertenece
+    this.powerupAttackOwner = targetPlayer; 
   } else {
     this.powerupHealthX = Math.floor(Math.random() * (this.$el.clientWidth - 40));
     this.powerupHealthY = playerTopPosition;
     this.powerupHealthVisible = true;
-    this.powerupHealthOwner = targetPlayer; // Indica a qué jugador pertenece
+    this.powerupHealthOwner = targetPlayer; 
   }
 
   setTimeout(this.spawnPowerup, this.powerupInterval);
 },
 checkPowerupCollision() {
-  // Verifica colisiones para el powerup de ataque
   if (this.powerupAttackVisible) {
     if (this.powerupAttackOwner === 'player1' && this.checkPlayerCollision(this.$refs.player1, this.powerupAttackX)) {
       this.applyAttackPowerup(1);
@@ -242,11 +237,11 @@ checkPowerupCollision() {
       if (userChoice) {
       this.backgroundMusic.pause();
       this.backgroundMusic.currentTime = 0;
-      this.$router.push('/menu'); // Regresa al menú
+      this.$router.push('/menu'); 
     } else {
       this.backgroundMusic.pause();
       this.backgroundMusic.currentTime = 0;
-      this.resetGame(); // Reinicia la partida
+      this.resetGame();
     }  
     },
 

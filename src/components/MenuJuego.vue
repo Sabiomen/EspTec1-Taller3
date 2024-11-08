@@ -51,7 +51,7 @@
         ],
         seleccionJugador1: null,
         seleccionJugador2: null,
-        username: localStorage.getItem('username') // Obtener nombre de usuario
+        username: localStorage.getItem('username') 
     };
 },
     methods: {
@@ -87,7 +87,7 @@
       }
         localStorage.setItem('jugador1', this.seleccionJugador1);
         localStorage.setItem('jugador2', this.seleccionJugador2);
-        localStorage.setItem('jugador1Nombre', this.username); // Guardar el nombre del Jugador 1
+        localStorage.setItem('jugador1Nombre', this.username); 
         this.$router.push('/partida');
       },
       regresarInicio() {
@@ -97,21 +97,12 @@
   };
   </script>
 
-
-
-
-  
   <style scoped>
-  body {
-    font-family: 'Arial', sans-serif;
-    background-color: #201e1e;
-    text-align: center;
-    color: white;
-  }
-  
+
   .container {
     margin: 40px auto;
     max-width: 700px;
+    height: 1100px;
   }
   
   .jugador {

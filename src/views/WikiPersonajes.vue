@@ -18,11 +18,23 @@
             <p>El Sus Cafe es un personaje que se caracteriza por ser cafe, y ser bien sus.</p>
         </div>
     </div>
+    <button @click="regresarInicio">Regresar al Inicio</button>
   </template>
   
   <script>
   export default {
+    data() {
+      return {
+        username: localStorage.getItem('username')
+      }
+    },
+    methods: {
+    regresarInicio() {
+      this.$router.push('/home');
+    },
+  },
     name: 'WikiPersonajes'
+    
   }
   </script>
   
@@ -53,4 +65,19 @@
   margin: 3px 0 0;
   margin-left: 5px;
 }
+button {
+    margin: 5px;
+    padding: 15px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #94302b;
+    color: white;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
   </style>
