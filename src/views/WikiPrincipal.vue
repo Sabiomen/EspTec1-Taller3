@@ -18,7 +18,7 @@ export default {
   name: 'WikiPrincipal',
   methods: {
     cerrarSesion() {
-      this.$router.push('/');
+      this.$router.push('/PA_Avance-AulaVirtual/');
     }
   }
 }

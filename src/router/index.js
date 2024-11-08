@@ -7,7 +7,7 @@ import PartidaJuego from '../components/PartidaJuego.vue';
 
 const routes = [
   {
-    path: '/',
+    path: '/PA_Avance-AulaVirtual/',
     name: 'home',
     component: IniciarSesion
   },

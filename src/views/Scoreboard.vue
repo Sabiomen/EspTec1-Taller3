@@ -24,7 +24,6 @@ export default {
 </script>
 
 <style>
-/* Agrega estilos para la pantalla de récords */
 .record-screen {
   text-align: center;
   padding: 20px;
