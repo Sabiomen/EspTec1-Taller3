@@ -23,6 +23,9 @@
 </template>
 
 <script>
+import beamEffect from '@/assets/beam_effect.mp3';
+import backgroundMusic from '@/assets/background_music.mp3';
+
 export default {
   name: 'PartidaJuego',
   data() {
@@ -47,6 +50,8 @@ export default {
       player1AttackDamage: 10,
       player2AttackDamage: 10,
       player1Wins: parseInt(localStorage.getItem('player1Wins')) || 0,
+      beamEffect: new Audio(beamEffect),
+      backgroundMusic: new Audio(backgroundMusic),
     };
   },
   mounted() {
@@ -55,21 +60,31 @@ export default {
   methods: {
 
     initializeGame() {
-      // Inicializar posición de jugadores y eventos
+    this.$nextTick(() => {
       this.player1X = (this.$el.clientWidth / 2) - 85; 
       this.player2X = (this.$el.clientWidth / 2) - 85;
 
       document.addEventListener('keydown', this.handleKeyDown);
       document.addEventListener('keyup', this.handleKeyUp);
+
+      this.backgroundMusic.loop = true;
+      this.backgroundMusic.volume = 1;
+      this.backgroundMusic.play();
+
       this.spawnPowerup();
       this.gameLoop();
-    },
-
+    });
+  },
+  incrementarGanadas() {
+  this.player1Wins += 1;
+  localStorage.setItem('player1Wins', this.player1Wins.toString()); // Convertir a string
+},
     handleKeyDown(e) {
+      if (!this.$refs.player1 || !this.$refs.player2) return;
       this.keys[e.key] = true;
 
       // Disparar láser
-      if (e.key === 'w' && !this.keys['shootingPlayer1']) {
+      if (e.key === 'w' || e.key === 'W' && !this.keys['shootingPlayer1']) {
         this.shootLaser(this.player1X, 'up', 1);
         this.keys['shootingPlayer1'] = true;
       } else if (e.key === 'ArrowUp' && !this.keys['shootingPlayer2']) {
@@ -79,16 +94,17 @@ export default {
     },
 
     handleKeyUp(e) {
+      if (!this.$refs.player1 || !this.$refs.player2) return;
       this.keys[e.key] = false;
-      if (e.key === 'w') this.keys['shootingPlayer1'] = false;
+      if (e.key === 'w' || e.key ==='W') this.keys['shootingPlayer1'] = false;
       if (e.key === 'ArrowUp') this.keys['shootingPlayer2'] = false;
     },
-
     gameLoop() {
+      if (!this.$refs.player1 || !this.$refs.player2) return;
       // Movimiento de jugadores y lógica del juego
-      if (this.keys['a'] && this.player1X > 0) {
+      if (this.keys['a'] || this.keys['A'] && this.player1X > 0) {
         this.player1X -= this.playerSpeed;
-      } else if (this.keys['d'] && this.player1X < this.$el.clientWidth - 171) {
+      } else if (this.keys['d'] || this.keys['D'] && this.player1X < this.$el.clientWidth - 171) {
         this.player1X += this.playerSpeed;
       }
 
@@ -104,6 +120,8 @@ export default {
     },
 
     shootLaser(xPosition, direction, player) {
+      const shootingSoundClone = this.beamEffect.cloneNode();
+      shootingSoundClone.play();
       const laser = {
         x: xPosition + 75, // Centrado relativo al jugador
         y: direction === 'up' ? this.$refs.player1.offsetTop : this.$refs.player2.offsetTop + this.$refs.player2.offsetHeight,
@@ -138,6 +156,8 @@ export default {
       });
     },
     spawnPowerup() {
+    if (!this.$refs.player1 || !this.$refs.player2) return;
+
   const powerupType = Math.random() < 0.5 ? 'attack' : 'health';
   const targetPlayer = Math.random() < 0.5 ? 'player1' : 'player2';
   const playerTopPosition = targetPlayer === 'player1' ? this.$refs.player1.offsetTop : this.$refs.player2.offsetTop;
@@ -168,7 +188,6 @@ checkPowerupCollision() {
     }
   }
 
-  // Verifica colisiones para el powerup de salud
   if (this.powerupHealthVisible) {
     if (this.powerupHealthOwner === 'player1' && this.checkPlayerCollision(this.$refs.player1, this.powerupHealthX)) {
       this.applyHealthPowerup(1);
@@ -206,38 +225,44 @@ checkPowerupCollision() {
       return powerupX >= playerRect.left && powerupX <= playerRect.right;
     },
     checkCollision(laser, player) {
-      const laserRect = { left: laser.x, top: laser.y, right: laser.x + 5, bottom: laser.y + 20 };
-      const playerRect = player.getBoundingClientRect();
-      return !(laserRect.right < playerRect.left ||
-        laserRect.left > playerRect.right ||
-        laserRect.bottom < playerRect.top ||
-        laserRect.top > playerRect.bottom);
-    },
+    if (!player) return false; // Verifica que el player exista
+    const laserRect = { left: laser.x, top: laser.y, right: laser.x + 5, bottom: laser.y + 20 };
+    const playerRect = player.getBoundingClientRect();
+    return !(laserRect.right < playerRect.left ||
+      laserRect.left > playerRect.right ||
+      laserRect.bottom < playerRect.top ||
+      laserRect.top > playerRect.bottom);
+  },
 
     endGame(winningPlayer) {
-    const userChoice = confirm(`¡Gana el Jugador ${winningPlayer}!\n¿Quieres regresar al menú? Presiona "Aceptar" para regresar o "Cancelar" para jugar otra partida.`);
-
-    if (userChoice) {
+      if (winningPlayer === 1) {
+    this.incrementarGanadas();
+  }
+      const userChoice = confirm(`¡Gana el Jugador ${winningPlayer}!\n¿Quieres regresar al menú? Presiona "Aceptar" para regresar o "Cancelar" para jugar otra partida.`);
+      if (userChoice) {
+      this.backgroundMusic.pause();
+      this.backgroundMusic.currentTime = 0;
       this.$router.push('/menu'); // Regresa al menú
     } else {
+      this.backgroundMusic.pause();
+      this.backgroundMusic.currentTime = 0;
       this.resetGame(); // Reinicia la partida
+    }  
+    },
+
+    resetGame() {
+      this.player1Health = 100;
+      this.player2Health = 100;
+      this.player1AttackDamage= 10;
+      this.player2AttackDamage= 10;
+      this.player1X = (this.$el.clientWidth / 2) - 85;
+      this.player2X = (this.$el.clientWidth / 2) - 85;
+      this.lasers = [];
+      for (let key in this.keys) {
+        this.keys[key] = false;
     }
-  },
-  resetGame() {
-    this.player1Health = 100;
-    this.player2Health = 100;
-    this.player1AttackDamage = 10;
-    this.player2AttackDamage = 10;
-    this.player1X = (this.$el.clientWidth / 2) - 85;
-    this.player2X = (this.$el.clientWidth / 2) - 85;
-    this.lasers = [];
-    for (let key in this.keys) {
-      this.keys[key] = false;
-    }
-  },
-  incrementarGanadas() {
-      this.player1Wins += 1;
-      localStorage.setItem('player1Wins', this.player1Wins); // Guardar en localStorage
+    this.backgroundMusic.play();
+    
     }
   }
 };
