@@ -1,5 +1,6 @@
 <template>
-    <div class="container">
+    <div class= "menu-juego-container">
+      <div class="container">
       <h1>Selecciona tu Personaje</h1>
   
       <div class="jugador" id="player1">
@@ -25,6 +26,8 @@
       <button @click="iniciarPartida">Iniciar Partida</button>
       <button @click="regresarInicio">Regresar al Inicio</button>
     </div>
+    </div>
+    
   </template>
   
   <script>
@@ -98,19 +101,32 @@
   </script>
 
   <style scoped>
-
+  .menu-juego-container {
+    background-image: url('@/assets/universo2.jpg'); /* Ruta a tu imagen de fondo */
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh; /* Asegura que el fondo cubra toda la altura de la ventana */
+  }
   .container {
-    margin: 40px auto;
+    margin: auto;
     max-width: 700px;
     height: 1100px;
   }
-  
+  h1{
+    padding-top: 5%;
+    padding-bottom: 2%;
+    margin-top: 0px;
+    color: white;
+  }
+  h2{
+    color: white;
+  }
   .jugador {
     margin: 25px;
     padding: 20px;
-    border: 2px solid #555;
+    border: 2px solid #070707;
     border-radius: 10px;
-    background-color: #555;
+    background-color: #1a1a1a;
     transition: transform 0.2s;
   }
   

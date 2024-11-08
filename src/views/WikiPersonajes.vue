@@ -2,6 +2,7 @@
     <div class="wiki-personajes">
       <h1>Wiki Personajes</h1>
       <p>Aquí encontrarás información sobre los personajes.</p>
+      <div class="contenedor">
         <div class="info-personajes">
             <img src="../assets/megadoodselect.png" alt="El Megahombre" class="foto-personajes"/>
             <h3>El Megahombre:</h3>
@@ -17,6 +18,8 @@
             <h3>El Sus Cafe: </h3>
             <p>El Sus Cafe es un personaje que se caracteriza por ser cafe, y ser bien sus.</p>
         </div>
+      </div>  
+      
     </div>
     <button @click="regresarInicio">Regresar al Inicio</button>
   </template>
@@ -44,7 +47,16 @@
   color: white;
   padding: 20px;
   min-height: 100vh;
+  background-image: url('@/assets/universo.jpg'); /* Ruta a tu imagen de fondo */
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
+
 
 .info-personajes {
   display: flex; 
@@ -79,5 +91,28 @@ button {
   
   button:hover {
     background-color: #0056b3;
+  }
+.contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    
+  }
+  h1 {
+    color: rgb(0, 0, 0);
+    font-size: 3rem;
+    font-weight: 800;
+    
+  }
+  h3 {
+    color: rgb(0, 0, 0);
+    font-size: 1.5rem ;
+    font-weight: 900;
+  }
+  p {
+    color: rgb(0, 0, 0);
+    font-size: 1.5rem;
+    font-weight: 700;
   }
   </style>
